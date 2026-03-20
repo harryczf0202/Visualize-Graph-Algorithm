@@ -1,0 +1,36 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- TOP PANEL -->
+<div id="top-panel">
+  <!-- Start row -->
+  <div class="search-row">
+    <div class="search-dot start"></div>
+    <div class="search-wrap">
+      <input class="search-input" id="start-input" placeholder="Start — search address or click map..." autocomplete="off">
+      <div class="autocomplete-list" id="start-list"></div>
+    </div>
+    <button class="pick-btn" id="pick-start" title="Click map to set start">📍 Pick</button>
+  </div>
+  <!-- End row -->
+  <div class="search-row">
+    <div class="search-dot end"></div>
+    <div class="search-wrap">
+      <input class="search-input" id="end-input" placeholder="End — search address or click map..." autocomplete="off">
+      <div class="autocomplete-list" id="end-list"></div>
+    </div>
+    <button class="pick-btn" id="pick-end" title="Click map to set end">📍 Pick</button>
+  </div>
+</div>
+
+<!-- BOTTOM CONTROLS -->
+<div id="astar-controls">
+  <button id="btn-play"  title="Play">&#9654;</button>
+  <button id="btn-pause" title="Pause">&#10074;&#10074;</button>
+  <button id="btn-reset" title="Reset">&#9632;</button>
+  <div id="astar-progress"><div id="astar-progress-bar"></div></div>
+  <span id="astar-status">SET START &amp; END TO BEGIN</span>
+  <span style="font-size:10px;color:var(--muted);">SPD</span>
+  <input type="range" id="astar-speed" min="1" max="100" value="30">
+  <button id="btn-theme" title="Toggle theme">🌙</button>
+</div>

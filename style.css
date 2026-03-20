@@ -1,0 +1,152 @@
+:root {
+  --bg: rgba(255,255,255,0.93);
+  --bg2: rgba(245,247,250,0.97);
+  --border: rgba(0,0,0,0.1);
+  --text: #1e293b;
+  --muted: #64748b;
+  --blue: #2563eb;
+  --green: #16a34a;
+  --red: #dc2626;
+  --amber: #d97706;
+}
+* { box-sizing: border-box; }
+
+/* ── TOP PANEL ── */
+#top-panel {
+  position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+  z-index: 9999; display: flex; flex-direction: column; gap: 8px;
+  width: min(520px, 92vw);
+  font-family: 'Space Mono', monospace;
+}
+
+.search-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.search-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid white;
+}
+.search-dot.start { background: var(--green); }
+.search-dot.end   { background: var(--red); }
+
+.search-wrap {
+  flex: 1; position: relative;
+}
+.search-input {
+  width: 100%; padding: 9px 14px; font-size: 11px; letter-spacing: 0.05em;
+  font-family: 'Space Mono', monospace;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); outline: none;
+  transition: border-color 0.2s, background 0.4s ease, color 0.4s ease;
+}
+.search-input:focus { border-color: var(--blue); }
+.search-input.active-pick { border-color: var(--amber); animation: pulse-border 1s infinite; }
+@keyframes pulse-border {
+  0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.4); }
+  50%      { box-shadow: 0 0 0 4px rgba(245,158,11,0); }
+}
+
+.autocomplete-list {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+  max-height: 180px; overflow-y: auto; z-index: 10001;
+  display: none;
+  transition: background 0.4s ease, border-color 0.4s ease;
+}
+.autocomplete-list.open { display: block; }
+.autocomplete-item {
+  padding: 8px 12px; font-size: 10px; letter-spacing: 0.03em;
+  color: var(--text); cursor: pointer; border-bottom: 1px solid var(--border);
+  transition: background 0.15s, color 0.4s ease, border-color 0.4s ease;
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover { background: rgba(96,165,250,0.12); color: var(--blue); }
+
+.pick-btn {
+  padding: 8px 12px; font-size: 10px; font-family: 'Space Mono', monospace;
+  background: none; border: 1px solid var(--border); border-radius: 8px;
+  color: var(--muted); cursor: pointer; white-space: nowrap; transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+.pick-btn:hover { border-color: var(--amber); color: var(--amber); }
+.pick-btn.active { border-color: var(--amber); color: var(--amber); background: rgba(245,158,11,0.1); }
+
+/* ── BOTTOM CONTROLS ── */
+#astar-controls {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 9999; display: flex; align-items: center; gap: 12px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 40px; padding: 10px 22px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  font-family: 'Space Mono', monospace; color: var(--text);
+  backdrop-filter: blur(12px);
+  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+#astar-controls button {
+  background: none; border: 1.5px solid var(--border);
+  color: var(--text); border-radius: 50%;
+  width: 36px; height: 36px; font-size: 14px;
+  cursor: pointer; transition: all 0.4s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+#astar-controls button:hover {
+  background: rgba(0,0,0,0.06); border-color: var(--blue); color: var(--blue);
+}
+#btn-play.ready {
+  border-color: var(--blue); color: var(--blue);
+  background: rgba(37,99,235,0.1);
+  animation: pulse-play 1.4s ease-in-out infinite;
+}
+@keyframes pulse-play {
+  0%,100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.35); }
+  50%      { box-shadow: 0 0 0 6px rgba(37,99,235,0); }
+}
+#btn-theme {
+  font-size: 16px !important; border-radius: 8px !important;
+  width: 40px !important;
+}
+#astar-speed { accent-color: var(--blue); width: 90px; cursor: pointer; }
+#astar-status {
+  font-size: 11px; letter-spacing: 0.08em; color: var(--muted);
+  min-width: 200px; text-align: center;
+  transition: color 0.4s ease;
+}
+#astar-progress {
+  width: 90px; height: 3px; background: rgba(255,255,255,0.08);
+  border-radius: 2px; overflow: hidden;
+}
+#astar-progress-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 2px; transition: width 0.1s linear;
+}
+
+/* ── DARK MODE ── */
+body.dark-mode {
+  --bg: rgba(10,10,20,0.92);
+  --bg2: rgba(18,18,32,0.95);
+  --border: rgba(255,255,255,0.1);
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --blue: #60a5fa;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+}
+body.dark-mode .search-input { color: #e2e8f0; }
+body.dark-mode #astar-controls button { color: #e2e8f0; }
+body.dark-mode #astar-status { color: #94a3b8; }
+
+/* ── TOOLTIP ── */
+.leaflet-tooltip-custom {
+  background: var(--bg2) !important; border: 1px solid var(--border) !important;
+  color: var(--text) !important; font-family: 'Space Mono', monospace !important;
+  font-size: 10px !important; letter-spacing: 0.1em !important;
+  padding: 3px 8px !important; border-radius: 4px !important;
+  box-shadow: none !important; white-space: nowrap !important;
+  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease !important;
+}
+.leaflet-tooltip-custom::before { display: none !important; }
+
+/* ── CURSOR ── */
+.map-pick-cursor .leaflet-container { cursor: crosshair !important; }
