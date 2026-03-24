@@ -17,6 +17,11 @@
   z-index: 9999; display: flex; flex-direction: column; gap: 8px;
   width: min(520px, 92vw);
   font-family: 'Space Mono', monospace;
+  transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Shift left when IDE panel is open */
+#top-panel.shifted {
+  left: calc(50% - 200px);
 }
 
 .search-row {
@@ -37,7 +42,7 @@
   font-family: 'Space Mono', monospace;
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: 8px; color: var(--text); outline: none;
-  transition: border-color 0.2s, background 0.4s ease, color 0.4s ease;
+  transition: border-color 0.2s, background 0.35s ease, color 0.35s ease;
 }
 .search-input:focus { border-color: var(--blue); }
 .search-input.active-pick { border-color: var(--amber); animation: pulse-border 1s infinite; }
@@ -51,13 +56,13 @@
   background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
   max-height: 180px; overflow-y: auto; z-index: 10001;
   display: none;
-  transition: background 0.4s ease, border-color 0.4s ease;
+  transition: background 0.35s ease, border-color 0.35s ease;
 }
 .autocomplete-list.open { display: block; }
 .autocomplete-item {
   padding: 8px 12px; font-size: 10px; letter-spacing: 0.03em;
   color: var(--text); cursor: pointer; border-bottom: 1px solid var(--border);
-  transition: background 0.15s, color 0.4s ease, border-color 0.4s ease;
+  transition: background 0.15s, color 0.35s ease, border-color 0.35s ease;
 }
 .autocomplete-item:last-child { border-bottom: none; }
 .autocomplete-item:hover { background: rgba(96,165,250,0.12); color: var(--blue); }
@@ -77,16 +82,20 @@
   z-index: 9999; display: flex; align-items: center; gap: 12px;
   background: var(--bg); border: 1px solid var(--border);
   border-radius: 40px; padding: 10px 22px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
   font-family: 'Space Mono', monospace; color: var(--text);
   backdrop-filter: blur(12px);
-  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Shift left when IDE panel is open */
+#astar-controls.shifted {
+  left: calc(50% - 200px);
 }
 #astar-controls button {
   background: none; border: 1.5px solid var(--border);
   color: var(--text); border-radius: 50%;
   width: 36px; height: 36px; font-size: 14px;
-  cursor: pointer; transition: all 0.4s ease;
+  cursor: pointer; transition: all 0.35s ease;
   display: flex; align-items: center; justify-content: center;
 }
 #astar-controls button:hover {
@@ -109,10 +118,10 @@
 #astar-status {
   font-size: 11px; letter-spacing: 0.08em; color: var(--muted);
   min-width: 200px; text-align: center;
-  transition: color 0.4s ease;
+  transition: color 0.35s ease;
 }
 #astar-progress {
-  width: 90px; height: 3px; background: rgba(255,255,255,0.08);
+  width: 90px; height: 3px; background: rgba(0,0,0,0.06);
   border-radius: 2px; overflow: hidden;
 }
 #astar-progress-bar {
@@ -136,6 +145,7 @@ body.dark-mode {
 body.dark-mode .search-input { color: #e2e8f0; }
 body.dark-mode #astar-controls button { color: #e2e8f0; }
 body.dark-mode #astar-status { color: #94a3b8; }
+body.dark-mode #astar-progress { background: rgba(255,255,255,0.08); }
 
 /* ── TOOLTIP ── */
 .leaflet-tooltip-custom {
@@ -144,9 +154,244 @@ body.dark-mode #astar-status { color: #94a3b8; }
   font-size: 10px !important; letter-spacing: 0.1em !important;
   padding: 3px 8px !important; border-radius: 4px !important;
   box-shadow: none !important; white-space: nowrap !important;
-  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease !important;
+  transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease !important;
 }
 .leaflet-tooltip-custom::before { display: none !important; }
 
 /* ── CURSOR ── */
 .map-pick-cursor .leaflet-container { cursor: crosshair !important; }
+
+/* ══════════════════════════════════════════
+   IDE PANEL
+   ══════════════════════════════════════════ */
+
+/* ── TOGGLE BUTTON ── */
+#ide-toggle {
+  position: fixed; top: 16px; right: 16px; z-index: 10000;
+  width: 44px; height: 44px; border-radius: 10px;
+  background: var(--bg); color: var(--muted);
+  border: 1px solid var(--border);
+  font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700;
+  cursor: pointer; backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: -0.5px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+#ide-toggle:hover {
+  color: var(--blue); border-color: var(--blue);
+}
+#ide-toggle.open {
+  right: 416px;
+  color: var(--blue); border-color: var(--blue);
+}
+
+/* ── PANEL (LIGHT MODE DEFAULT) ── */
+#ide-panel {
+  position: fixed; top: 0; right: 0; z-index: 9998;
+  width: 400px; height: 100vh;
+  background: rgba(250,251,253,0.97);
+  border-left: 1px solid rgba(0,0,0,0.08);
+  backdrop-filter: blur(16px);
+  display: flex; flex-direction: column;
+  font-family: 'Space Mono', monospace;
+  transform: translateX(100%);
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.35s ease, border-left-color 0.35s ease;
+}
+#ide-panel.open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* ── HEADER ── */
+#ide-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; gap: 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+  transition: border-bottom-color 0.35s ease;
+}
+#ide-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
+  color: #64748b;
+}
+#ide-header-right {
+  display: flex; align-items: center; gap: 8px;
+}
+#api-key-input {
+  width: 150px; padding: 5px 10px;
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 6px; color: #475569; outline: none;
+  transition: border-color 0.2s, background 0.35s ease, color 0.35s ease;
+}
+#api-key-input:focus {
+  border-color: var(--blue);
+}
+#api-key-input::placeholder { color: #94a3b8; }
+#ide-close {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: none; border: 1px solid rgba(0,0,0,0.08);
+  color: #64748b; font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+#ide-close:hover { color: #ef4444; border-color: rgba(239,68,68,0.3); }
+
+/* ── TABS ── */
+#ide-tabs {
+  display: flex; gap: 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+  transition: border-bottom-color 0.35s ease;
+}
+.ide-tab {
+  flex: 1; padding: 10px 0;
+  font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.08em;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: #94a3b8; cursor: pointer;
+  transition: all 0.2s;
+}
+.ide-tab:hover { color: #475569; }
+.ide-tab.active {
+  color: var(--blue); border-bottom-color: var(--blue);
+}
+
+/* ── EDITOR ── */
+#ide-editor-wrap {
+  flex: 1; position: relative; overflow: hidden;
+  min-height: 0;
+}
+.ide-editor-pane {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  display: none;
+}
+.ide-editor-pane.active { display: block; }
+/* CodeMirror fills pane */
+.ide-editor-pane .CodeMirror {
+  height: 100% !important;
+  font-size: 12px !important;
+}
+
+/* ── TOOLBAR ── */
+#ide-toolbar {
+  display: flex; padding: 8px 16px; gap: 8px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+#ide-run {
+  flex: 1; padding: 10px 0;
+  font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.1em;
+  background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2);
+  border-radius: 8px; color: var(--blue); cursor: pointer;
+  transition: all 0.2s;
+}
+#ide-run:hover {
+  background: rgba(37,99,235,0.15); border-color: rgba(37,99,235,0.4);
+}
+#ide-run:active {
+  transform: scale(0.98);
+}
+#ide-run.running {
+  opacity: 0.5; pointer-events: none;
+}
+
+/* ── TERMINAL (light mode default, dark in dark mode) ── */
+#ide-terminal-wrap {
+  flex-shrink: 0; height: 130px;
+  display: flex; flex-direction: column;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  background: rgba(240,242,246,0.98);
+  transition: background 0.35s ease, border-color 0.35s ease;
+}
+#ide-terminal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+#ide-terminal-header span {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.15em;
+  color: #64748b;
+}
+#ide-terminal-clear {
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  background: none; border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 4px; color: #64748b; cursor: pointer;
+  padding: 2px 8px; transition: border-color 0.35s ease, color 0.35s ease;
+}
+#ide-terminal-clear:hover { color: #1e293b; border-color: rgba(0,0,0,0.2); }
+#ide-terminal {
+  flex: 1; overflow-y: auto; padding: 8px 16px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  line-height: 1.6; color: #475569;
+  transition: color 0.35s ease;
+}
+#ide-terminal .log-error { color: #dc2626; }
+#ide-terminal .log-success { color: #16a34a; }
+#ide-terminal .log-info { color: #2563eb; }
+#ide-terminal .log-warn { color: #d97706; }
+
+/* ── IDE DARK MODE OVERRIDES ── */
+body.dark-mode #ide-panel {
+  background: rgba(15,15,25,0.96);
+  border-left-color: rgba(255,255,255,0.08);
+}
+body.dark-mode #ide-header {
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+body.dark-mode #api-key-input {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.1);
+  color: #94a3b8;
+}
+body.dark-mode #api-key-input::placeholder { color: #475569; }
+body.dark-mode #ide-tabs {
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+body.dark-mode .ide-tab { color: #475569; }
+body.dark-mode .ide-tab:hover { color: #94a3b8; }
+body.dark-mode #ide-toolbar {
+  border-top-color: rgba(255,255,255,0.06);
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+body.dark-mode #ide-run {
+  background: rgba(96,165,250,0.15);
+  border-color: rgba(96,165,250,0.25);
+}
+body.dark-mode #ide-run:hover {
+  background: rgba(96,165,250,0.25);
+  border-color: rgba(96,165,250,0.5);
+}
+body.dark-mode #ide-close {
+  border-color: rgba(255,255,255,0.08);
+}
+body.dark-mode #ide-terminal-wrap {
+  background: #0f0f19;
+  border-top-color: rgba(255,255,255,0.06);
+}
+body.dark-mode #ide-terminal-header {
+  border-bottom-color: rgba(255,255,255,0.04);
+}
+body.dark-mode #ide-terminal-header span { color: #475569; }
+body.dark-mode #ide-terminal-clear {
+  border-color: rgba(255,255,255,0.08); color: #475569;
+}
+body.dark-mode #ide-terminal-clear:hover { color: #94a3b8; border-color: rgba(255,255,255,0.15); }
+body.dark-mode #ide-terminal { color: #94a3b8; }
+body.dark-mode #ide-terminal .log-error { color: #ef4444; }
+body.dark-mode #ide-terminal .log-success { color: #22c55e; }
+body.dark-mode #ide-terminal .log-info { color: #60a5fa; }
+body.dark-mode #ide-terminal .log-warn { color: #f59e0b; }
+body.dark-mode #ide-toggle {
+  background: rgba(15,15,25,0.85);
+  border-color: rgba(255,255,255,0.12);
+  color: #94a3b8;
+}
+body.dark-mode #ide-toggle:hover {
+  background: rgba(15,15,25,0.95);
+  color: #60a5fa; border-color: rgba(96,165,250,0.3);
+}

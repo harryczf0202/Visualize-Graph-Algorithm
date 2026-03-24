@@ -23,6 +23,49 @@
   </div>
 </div>
 
+<!-- IDE TOGGLE BUTTON -->
+<button id="ide-toggle" title="Toggle IDE panel">&lt;/&gt;</button>
+
+<!-- IDE PANEL -->
+<div id="ide-panel">
+  <!-- Header -->
+  <div id="ide-header">
+    <span id="ide-title">ALGORITHM EDITOR</span>
+    <div id="ide-header-right">
+      <input type="password" id="api-key-input" placeholder="Anthropic API Key" autocomplete="off" spellcheck="false">
+      <button id="ide-close" title="Close IDE">&times;</button>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <div id="ide-tabs">
+    <button class="ide-tab active" data-lang="javascript">JavaScript</button>
+    <button class="ide-tab" data-lang="python">Python</button>
+    <button class="ide-tab" data-lang="cpp">C++</button>
+  </div>
+
+  <!-- Editor containers (one per language) -->
+  <div id="ide-editor-wrap">
+    <div class="ide-editor-pane active" id="editor-javascript"></div>
+    <div class="ide-editor-pane" id="editor-python"></div>
+    <div class="ide-editor-pane" id="editor-cpp"></div>
+  </div>
+
+  <!-- Run button -->
+  <div id="ide-toolbar">
+    <button id="ide-run">&#9654; RUN</button>
+  </div>
+
+  <!-- Terminal -->
+  <div id="ide-terminal-wrap">
+    <div id="ide-terminal-header">
+      <span>TERMINAL</span>
+      <button id="ide-terminal-clear">Clear</button>
+    </div>
+    <div id="ide-terminal"></div>
+  </div>
+</div>
+
 <!-- BOTTOM CONTROLS -->
 <div id="astar-controls">
   <button id="btn-play"  title="Play">&#9654;</button>

@@ -8,9 +8,15 @@ from scipy.spatial import ConvexHull
 # ==========================================
 # 1. DOWNLOAD MAP DATA
 # ==========================================
-place_name = "Klang, Selangor, Malaysia"
-print(f"Downloading road network for {place_name}...")
-G = ox.graph_from_place(place_name, network_type='drive')
+print("Downloading road network for Klang + Shah Alam area...")
+
+# Use graph_from_bbox with a single bounding box that covers both cities.
+# This ensures all roads between them are included (no disconnected components).
+# osmnx 2.x bbox format: (west, south, east, north) = (min_lng, min_lat, max_lng, max_lat)
+WEST, SOUTH, EAST, NORTH = 101.33, 2.95, 101.58, 3.18
+print(f"  Bounding box: W={WEST} S={SOUTH} E={EAST} N={NORTH}")
+G = ox.graph_from_bbox(bbox=(WEST, SOUTH, EAST, NORTH), network_type='drive')
+print(f"  Nodes: {len(G.nodes)}, Edges: {len(G.edges)}")
 
 # ==========================================
 # 2. SERIALIZE GRAPH FOR CLIENT-SIDE A*
@@ -23,7 +29,6 @@ for node_id, data in G.nodes(data=True):
     nodes_data[str(node_id)] = {"lat": data['y'], "lng": data['x']}
 
 # Edges: id -> list of {to, length, coords}
-# coords = list of [lat,lng] using full OSM geometry
 edges_data = {}
 for u, v, data in G.edges(data=True):
     su = str(u)
@@ -42,8 +47,7 @@ for u, v, data in G.edges(data=True):
         "coords": coords
     })
 
-# Build spatial index: grid buckets for fast nearest-node lookup
-# Grid cell size ~100m at this latitude
+# Build spatial index grid
 CELL_SIZE = 0.001
 grid = {}
 for node_id, data in G.nodes(data=True):
@@ -54,32 +58,33 @@ for node_id, data in G.nodes(data=True):
         grid[key] = []
     grid[key].append({"id": str(node_id), "lat": data['y'], "lng": data['x']})
 
-# Serialize to JSON strings
-nodes_json = json.dumps(nodes_data)
-edges_json = json.dumps(edges_data)
-grid_json = json.dumps(grid)
+nodes_json    = json.dumps(nodes_data)
+edges_json    = json.dumps(edges_data)
+grid_json     = json.dumps(grid)
 cell_size_json = json.dumps(CELL_SIZE)
 
-# Compute convex hull of all graph nodes for the coverage boundary
+# Convex hull for coverage boundary
 print("Computing network coverage boundary...")
 node_coords = np.array([[data['y'], data['x']] for _, data in G.nodes(data=True)])
 hull = ConvexHull(node_coords)
 hull_points = node_coords[hull.vertices].tolist()
-# Close the polygon by repeating the first point
 hull_points.append(hull_points[0])
 hull_json = json.dumps(hull_points)
 
-center_lat = (G.graph['bbox'][0] + G.graph['bbox'][2]) / 2 if 'bbox' in G.graph else 3.05
-center_lng = (G.graph['bbox'][1] + G.graph['bbox'][3]) / 2 if 'bbox' in G.graph else 101.45
+# Center of the combined area
+all_lats = [data['y'] for _, data in G.nodes(data=True)]
+all_lngs = [data['x'] for _, data in G.nodes(data=True)]
+center_lat = (max(all_lats) + min(all_lats)) / 2
+center_lng = (max(all_lngs) + min(all_lngs)) / 2
 
 # ==========================================
-# 3. BUILD MAP
+# 3. BUILD MAP (light tiles by default)
 # ==========================================
 print("Building interactive map...")
 m = folium.Map(
     location=[center_lat, center_lng],
-    zoom_start=14,
-    tiles="CartoDB dark_matter"
+    zoom_start=13,
+    tiles="CartoDB positron"
 )
 
 # ==========================================
@@ -87,7 +92,6 @@ m = folium.Map(
 # ==========================================
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Read external CSS, JS, and HTML template
 with open(os.path.join(base_dir, "style.css"), "r", encoding="utf-8") as f:
     style_css = f.read()
 
@@ -97,25 +101,39 @@ with open(os.path.join(base_dir, "script.js"), "r", encoding="utf-8") as f:
 with open(os.path.join(base_dir, "template.html"), "r", encoding="utf-8") as f:
     template_html = f.read()
 
-# Inject graph data into JavaScript via placeholder replacement
 script_js = script_js.replace("__NODES_JSON__", nodes_json)
 script_js = script_js.replace("__EDGES_JSON__", edges_json)
 script_js = script_js.replace("__GRID_JSON__", grid_json)
 script_js = script_js.replace("__CELL_SIZE_JSON__", cell_size_json)
 script_js = script_js.replace("__HULL_JSON__", hull_json)
 
-# Assemble final HTML: fonts + style + HTML markup + script
-final_html = template_html + "\n<style>\n" + style_css + "\n</style>\n" + "\n<script>\n" + script_js + "\n</script>"
+codemirror_cdn = """
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/monokai.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+"""
 
-# Attach to Folium map
-m.get_root().html.add_child(folium.Element(final_html))
+final_html = (
+    codemirror_cdn + "\n"
+    + template_html
+    + "\n<style>\n" + style_css + "\n</style>\n"
+    + "\n<script>\n" + script_js + "\n</script>"
+)
+
+safe_html = '{% raw %}' + final_html + '{% endraw %}'
+m.get_root().html.add_child(folium.Element(safe_html))
 
 # ==========================================
 # 5. SAVE OUTPUT
 # ==========================================
-output_path = "klang.html"
+output_path = "klang_astar_cinematic.html"
 m.save(output_path)
 print(f"\nDone! Saved to {output_path}")
 print(f"  Graph nodes embedded: {len(nodes_data)}")
 print(f"  Graph edges embedded: {sum(len(v) for v in edges_data.values())}")
-print(f"\nOpen the HTML file — pick start/end by clicking or searching, then press RUN A*")
+print(f"\nOpen the HTML file — pick start/end by clicking or searching, then press play")
