@@ -131,7 +131,7 @@ m.get_root().html.add_child(folium.Element(safe_html))
 # ==========================================
 # 5. SAVE OUTPUT
 # ==========================================
-output_path = "klang_astar_cinematic.html"
+output_path = "klang.html"
 m.save(output_path)
 print(f"\nDone! Saved to {output_path}")
 print(f"  Graph nodes embedded: {len(nodes_data)}")

@@ -9,22 +9,37 @@
   // ── STARTER CODE TEMPLATES ──
   var TEMPLATES = {
     javascript: [
-      '// BFS — Breadth-First Search',
-      '// graph.nodes = {id: {lat, lng}}',
-      '// graph.edges = {id: [{to, length, coords: [[lat,lng],...]}]}',
-      '// Must return {exploredEdges, path}',
+      '// =============================================',
+      '// BFS — Breadth-First Search (Starter Code)',
+      '// =============================================',
+      '//',
+      '// INPUTS (provided automatically):',
+      '//   graph.nodes — { nodeId: { lat, lng } }',
+      '//   graph.edges — { nodeId: [{ to, length, coords }] }',
+      '//   startId     — start node ID (string)',
+      '//   endId       — end node ID (string)',
+      '//',
+      '// MUST RETURN:',
+      '//   { exploredEdges: [[[lat,lng],...], ...],',
+      '//     path: [[lat,lng], ...] }',
+      '// =============================================',
       '',
+      '// Step 1: Initialize BFS queue and tracking',
       'var queue = [startId];',
       'var visited = {}; visited[startId] = true;',
       'var cameFrom = {};',
-      'var exploredEdges = [];',
+      'var exploredEdges = [];  // each edge\'s coords go here (blue lines)',
       '',
+      '// Step 2: Explore the graph level by level',
       'while (queue.length > 0) {',
       '  var current = queue.shift();',
       '  if (current === endId) break;',
+      '',
       '  var neighbors = graph.edges[current] || [];',
       '  for (var i = 0; i < neighbors.length; i++) {',
       '    var nb = neighbors[i];',
+      '    // nb.coords = road geometry for this edge',
+      '    // nb.length = edge weight in meters',
       '    exploredEdges.push(nb.coords);',
       '    if (!visited[nb.to]) {',
       '      visited[nb.to] = true;',
@@ -34,7 +49,7 @@
       '  }',
       '}',
       '',
-      '// Reconstruct path',
+      '// Step 3: Reconstruct the path (red line)',
       'var path = [];',
       'var c = endId;',
       'while (c && c !== startId) {',
@@ -47,10 +62,18 @@
     ].join('\n'),
 
     python: [
-      '# Graph traversal algorithm \u2014 Python',
-      '# graph["nodes"]: dict of {node_id: {lat: float, lng: float}}',
-      '# graph["edges"]: dict of {node_id: [{to: str, length: float, coords: [[lat,lng],...]}]}',
-      '# Return: {"explored_edges": [[[lat,lng],...], ...], "path": [[lat,lng],...]}',
+      '# =============================================',
+      '# A* Search (Starter Code)',
+      '# =============================================',
+      '#',
+      '# INPUTS (provided automatically):',
+      '#   graph["nodes"] = { node_id: { lat, lng } }',
+      '#   graph["edges"] = { node_id: [{ to, length, coords }] }',
+      '#   start_id / end_id = node ID strings',
+      '#',
+      '# MUST DEFINE: def run_algorithm(graph, start_id, end_id)',
+      '# MUST RETURN: {"explored_edges": [...], "path": [...]}',
+      '# =============================================',
       '',
       'import heapq',
       'import math',
@@ -95,14 +118,20 @@
     ].join('\n'),
 
     cpp: [
-      '// Graph traversal algorithm — C++',
-      '// Input via stdin: JSON with nodes, edges, start_id, end_id',
+      '// =============================================',
+      '// A* Search (C++ Starter Code)',
+      '// =============================================',
       '//',
-      '// OUTPUT FORMAT (compressed — coords reconstructed in browser):',
-      '// {',
-      '//   "explored": [["u1","v1"], ["u2","v2"], ...],',
-      '//   "path": ["nodeId1", "nodeId2", ...]',
-      '// }',
+      '// Compiled via Wandbox (gcc). Input via stdin.',
+      '// STDIN: { "nodes":{...}, "edges":{...}, "start_id":"...", "end_id":"..." }',
+      '//',
+      '// MUST PRINT (compact format):',
+      '//   { "explored": [["u1","v1"], ...],',
+      '//     "path": ["nodeId1", "nodeId2", ...] }',
+      '//',
+      '// NOTE: coords are rebuilt in the browser',
+      '//       from node ID pairs automatically.',
+      '// =============================================',
       '',
       '#include <iostream>',
       '#include <queue>',
@@ -272,7 +301,7 @@
       radius: 10, color: '#fff', weight: 2.5,
       fillColor: isStart ? '#22c55e' : '#ef4444', fillOpacity: 1
     }).addTo(map).bindTooltip(label, {
-      permanent: true, direction: 'right', className: 'leaflet-tooltip-custom'
+      permanent: true, direction: 'right', className: 'leaflet-tooltip-custom', offset: [3, 7]
     });
     if (isStart) startMarker = mk; else endMarker = mk;
     mk.bringToFront();
@@ -388,9 +417,19 @@
 
   function setPlayState(state) {
     playState = state;
-    var btn = document.getElementById('btn-play');
-    btn.classList.toggle('ready', state === 'ready');
-    if (state === 'idle') setStatus('SET START & END, THEN PRESS \u25B6', 'var(--muted)');
+    var switcher = document.getElementById('playback-switcher');
+
+    switcher.classList.toggle('pulse-ready', state === 'ready');
+
+    if (state === 'idle' || state === 'done') {
+      switcher.setAttribute('data-active', '3'); // Stop
+    } else if (state === 'ready' || state === 'running') {
+      switcher.setAttribute('data-active', '1'); // Play
+    } else if (state === 'paused') {
+      switcher.setAttribute('data-active', '2'); // Pause
+    }
+
+    if (state === 'idle') setStatus('SET START & END TO BEGIN', 'var(--muted)');
     if (state === 'ready') setStatus('ROUTE READY \u2014 PRESS \u25B6 TO RUN', 'var(--blue)');
     if (state === 'done') setStatus('SHORTEST PATH FOUND \u2713', 'var(--green)');
   }
@@ -424,7 +463,7 @@
 
   function addBlueEdge(coords) {
     var pl = L.polyline(coords, {
-      color: '#60a5fa', weight: 4, opacity: 0.8,
+      color: '#60a5fa', weight: 4, opacity: 1,
       smoothFactor: 0, lineJoin: 'round', lineCap: 'round'
     }).addTo(map);
     bluePolylines.push(pl);
@@ -448,13 +487,15 @@
   }
 
   function getSpeed() {
-    return Math.max(1, 201 - parseInt(document.getElementById('astar-speed').value) * 2);
+    var v = parseInt(document.getElementById('astar-speed-container').getAttribute('data-val')) || 30;
+    return Math.max(1, 201 - v * 2);
   }
 
   function tick(mySession) {
     if (!isRunning || mySession !== sessionId) return;
     if (currentIndex >= edgeData.length) { drawRedPath(mySession); return; }
-    var batch = Math.max(1, Math.floor(parseInt(document.getElementById('astar-speed').value) / 8));
+    var v = parseInt(document.getElementById('astar-speed-container').getAttribute('data-val')) || 30;
+    var batch = Math.max(1, Math.floor(v / 8));
     for (var b = 0; b < batch && currentIndex < edgeData.length; b++) {
       addBlueEdge(edgeData[currentIndex]); currentIndex++;
     }
@@ -471,19 +512,25 @@
     }
     if (playState === 'done') {
       reset();
-      setTimeout(function () { isRunning = true; playState = 'playing'; tick(sessionId); }, 50);
+      setTimeout(function () {
+        isRunning = true;
+        setPlayState('running');
+        tick(sessionId);
+      }, 50);
       return;
     }
     if (playState === 'ready' || playState === 'paused') {
       if (isRunning) return;
-      isRunning = true; playState = 'playing';
+      isRunning = true;
+      setPlayState('running');
       document.getElementById('btn-play').classList.remove('ready');
       tick(sessionId);
     }
   }
   function pause() {
     if (!isRunning) return;
-    isRunning = false; playState = 'paused';
+    isRunning = false;
+    setPlayState('paused');
     if (animTimer) clearTimeout(animTimer);
     setStatus('PAUSED \u2014 PRESS \u25B6 TO RESUME', 'var(--amber)');
   }
@@ -505,10 +552,14 @@
   }
 
   // ── THEME TOGGLE ──
-  function toggleTheme() {
-    isDark = !isDark;
+  var isDark = false;
+  function applyTheme(dark) {
+    isDark = dark;
     document.body.classList.toggle('dark-mode', isDark);
-    document.getElementById('btn-theme').textContent = isDark ? '\uD83C\uDF19' : '\u2600\uFE0F';
+
+    var themeSwitcher = document.getElementById('theme-switcher');
+    if (themeSwitcher) themeSwitcher.setAttribute('data-active', isDark ? '2' : '1');
+
     if (isDark) { lightTile.remove(); darkTile.addTo(map); }
     else { darkTile.remove(); lightTile.addTo(map); }
     // Switch CodeMirror themes
@@ -934,8 +985,9 @@
     var runBtn = document.getElementById('ide-run');
     runBtn.classList.add('running');
 
-    reset();
     edgeData = []; pathCoords = [];
+    reset();
+    setStatus('RUNNING... PLEASE WAIT', 'var(--blue)');
     termLog('---', 'plain');
 
     try {
@@ -981,8 +1033,66 @@
     // Replace default tile with managed layers — start in light mode
     map.eachLayer(function (l) { if (l._url) map.removeLayer(l); });
     lightTile.addTo(map);
-    document.getElementById('btn-theme').textContent = '\u2600\uFE0F';
+    applyTheme(false);
     setPlayState('idle');
+
+    // Setup custom speed slider
+    function setupSpeedSlider() {
+      var slider = document.getElementById('astar-speed-container');
+      var progress = document.getElementById('astar-speed-progress');
+      var thumb = document.getElementById('astar-speed-thumb');
+      var isDragging = false, sliderRect;
+
+      function update(percent) {
+        percent = Math.max(1, Math.min(100, percent));
+        slider.setAttribute('data-val', Math.round(percent));
+        progress.style.width = percent + '%';
+        thumb.style.left = percent + '%';
+      }
+
+      function onMove(clientX) {
+        var offsetX = clientX - sliderRect.left;
+        update((offsetX / sliderRect.width) * 100);
+      }
+
+      thumb.addEventListener('mousedown', function (e) {
+        isDragging = true; sliderRect = slider.getBoundingClientRect();
+        thumb.classList.add('active');
+        onMove(e.clientX);
+      });
+      thumb.addEventListener('touchstart', function (e) {
+        isDragging = true; sliderRect = slider.getBoundingClientRect();
+        thumb.classList.add('active');
+        onMove(e.touches[0].clientX);
+      }, { passive: true });
+
+      document.addEventListener('mousemove', function (e) { if (isDragging) onMove(e.clientX); });
+      document.addEventListener('touchmove', function (e) {
+        if (isDragging) { e.preventDefault(); onMove(e.touches[0].clientX); }
+      }, { passive: false });
+
+      function stopDrag() {
+        isDragging = false;
+        thumb.classList.remove('active');
+      }
+
+      document.addEventListener('mouseup', stopDrag);
+      document.addEventListener('touchend', stopDrag);
+
+      slider.addEventListener('mousedown', function (e) {
+        isDragging = true; sliderRect = slider.getBoundingClientRect();
+        thumb.classList.add('active');
+        onMove(e.clientX);
+      });
+      slider.addEventListener('touchstart', function (e) {
+        isDragging = true; sliderRect = slider.getBoundingClientRect();
+        thumb.classList.add('active');
+        onMove(e.touches[0].clientX);
+      }, { passive: true });
+
+      update(30);
+    }
+    setupSpeedSlider();
 
     // Draw network coverage boundary (non-interactive, won't block clicks)
     L.polygon(HULL, {
@@ -1042,7 +1152,8 @@
     document.getElementById('btn-play').addEventListener('click', play);
     document.getElementById('btn-pause').addEventListener('click', pause);
     document.getElementById('btn-reset').addEventListener('click', reset);
-    document.getElementById('btn-theme').addEventListener('click', toggleTheme);
+    document.getElementById('btn-theme-light').addEventListener('click', function () { applyTheme(false); });
+    document.getElementById('btn-theme-dark').addEventListener('click', function () { applyTheme(true); });
 
     // ── IDE INITIALIZATION ──
     initEditors();
@@ -1064,7 +1175,15 @@
     // Terminal clear
     document.getElementById('ide-terminal-clear').addEventListener('click', termClear);
 
+    // Guide toggle
+    document.getElementById('ide-guide-toggle').addEventListener('click', function () {
+      var guide = document.getElementById('ide-guide');
+      var btn = document.getElementById('ide-guide-toggle');
+      guide.classList.toggle('collapsed');
+      btn.classList.toggle('active');
+    });
+
     // Welcome message
-    termLog('Algorithm Editor ready. Write code, then click RUN.', 'log-info');
+    termLog('Algorithm Editor ready. Click ? for API guide, then write code and click RUN.', 'log-info');
   });
 })();
