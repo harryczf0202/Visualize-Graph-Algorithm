@@ -105,3 +105,9 @@ This script will:
 4. Choose your preferred language tab (JavaScript, Python, or C++), write your implementation, and click **RUN**.
 5. The visualizer will show the compilation terminal, animate the explored edges (blue), and render the final computed shortest path (red).
 6. Adjust the animation speed using the **SPD** slider at the bottom.
+
+---
+
+## About
+
+This is a fun project built to help learn and see how graph algorithms actually work. It was created with the help of Antigravity, Claude, and Gemini.
