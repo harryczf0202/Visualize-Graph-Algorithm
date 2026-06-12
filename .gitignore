@@ -5,6 +5,3 @@ __pycache__/
 
 # OSMnx Cache
 cache/
-
-# Archived versions (large generated files)
-/archive/
