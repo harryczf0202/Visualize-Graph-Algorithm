@@ -1,0 +1,215 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- TOP PANEL -->
+<div id="top-panel">
+  <!-- Start row -->
+  <div class="search-row">
+    <div class="search-dot start"></div>
+    <div class="search-wrap">
+      <input class="search-input" id="start-input" placeholder="Start — search address or click map..."
+        autocomplete="off">
+      <div class="autocomplete-list" id="start-list"></div>
+    </div>
+    <button class="pick-btn" id="pick-start" title="Click map to set start">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+        <path fill-rule="evenodd"
+          d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+          clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+  <!-- End row -->
+  <div class="search-row">
+    <div class="search-dot end"></div>
+    <div class="search-wrap">
+      <input class="search-input" id="end-input" placeholder="End — search address or click map..." autocomplete="off">
+      <div class="autocomplete-list" id="end-list"></div>
+    </div>
+    <button class="pick-btn" id="pick-end" title="Click map to set end">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+        <path fill-rule="evenodd"
+          d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+          clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- IDE TOGGLE BUTTON -->
+<button id="ide-toggle" title="Toggle IDE panel">&lt;/&gt;</button>
+
+<!-- IDE PANEL -->
+<div id="ide-panel">
+  <!-- Header -->
+  <div id="ide-header">
+    <span id="ide-title">ALGORITHM EDITOR</span>
+    <div id="ide-header-right">
+      <button id="ide-guide-toggle" title="API Guide">?</button>
+      <button id="ide-close" title="Close IDE">&times;</button>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <div id="ide-tabs">
+    <button class="ide-tab active" data-lang="javascript">JavaScript</button>
+    <button class="ide-tab" data-lang="python">Python</button>
+    <button class="ide-tab" data-lang="cpp">C++</button>
+  </div>
+
+  <!-- Collapsible API Guide -->
+  <div id="ide-guide" class="collapsed">
+    <div class="guide-section">
+      <h3>📖 How It Works</h3>
+      <p>Write a graph traversal algorithm. The visualizer will animate
+      your <strong>explored edges</strong> (blue) then draw the
+      <strong>shortest path</strong> (red). Pick start &amp; end on the map first.</p>
+    </div>
+
+    <div class="guide-section">
+      <h3>📦 Data You Receive</h3>
+      <div class="guide-code-block">
+        <span class="guide-label">graph.nodes</span>
+        <code>{ "12345": { lat: 3.05, lng: 101.6 }, ... }</code>
+      </div>
+      <div class="guide-code-block">
+        <span class="guide-label">graph.edges</span>
+        <code>{ "12345": [{ to: "67890", length: 142.5, coords: [[lat,lng], ...] }] }</code>
+      </div>
+      <div class="guide-code-block">
+        <span class="guide-label">startId / endId</span>
+        <code>Node ID strings matching keys in graph.nodes</code>
+      </div>
+    </div>
+
+    <div class="guide-section">
+      <h3>✅ What To Return</h3>
+      <table class="guide-table">
+        <thead><tr><th>Language</th><th>Return Format</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>JavaScript</td>
+            <td><code>return { exploredEdges: [[[lat,lng],...], ...], path: [[lat,lng], ...] }</code></td>
+          </tr>
+          <tr>
+            <td>Python</td>
+            <td><code>def run_algorithm(graph, start_id, end_id):<br>&nbsp;&nbsp;return {"explored_edges": [...], "path": [...]}</code></td>
+          </tr>
+          <tr>
+            <td>C++</td>
+            <td><code>cout &lt;&lt; json{{"explored", [["u","v"],...]}, {"path", ["n1","n2",...]}}</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="guide-section">
+      <h3>💡 Tips</h3>
+      <ul>
+        <li><strong>exploredEdges</strong> — array of coordinate arrays (one per edge visited)</li>
+        <li><strong>path</strong> — flat array of <code>[lat, lng]</code> pairs forming the route</li>
+        <li>Use <code>nb.length</code> as edge weight (meters)</li>
+        <li>Use <code>nb.coords</code> to get the road geometry for each edge</li>
+        <li>C++ uses Wandbox — keep subgraph small for fast compile</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Editor containers (one per language) -->
+  <div id="ide-editor-wrap">
+    <div class="ide-editor-pane active" id="editor-javascript"></div>
+    <div class="ide-editor-pane" id="editor-python"></div>
+    <div class="ide-editor-pane" id="editor-cpp"></div>
+  </div>
+
+  <!-- Run button -->
+  <div id="ide-toolbar">
+    <button id="ide-run">&#9654; RUN</button>
+  </div>
+
+  <!-- Terminal -->
+  <div id="ide-terminal-wrap">
+    <div id="ide-terminal-header">
+      <span>TERMINAL</span>
+      <button id="ide-terminal-clear">Clear</button>
+    </div>
+    <div id="ide-terminal"></div>
+  </div>
+</div>
+
+<!-- BOTTOM CONTROLS -->
+<div id="astar-controls">
+  <fieldset class="switcher" id="playback-switcher" data-active="1">
+    <button class="switcher__option" id="btn-play" title="Play">
+      <svg class="switcher__icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z" />
+      </svg>
+    </button>
+    <button class="switcher__option" id="btn-pause" title="Pause">
+      <svg class="switcher__icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+      </svg>
+    </button>
+    <button class="switcher__option" id="btn-reset" title="Reset">
+      <svg class="switcher__icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 6h12v12H6z" />
+      </svg>
+    </button>
+
+  </fieldset>
+  <div id="astar-progress">
+    <div id="astar-progress-bar"></div>
+  </div>
+  <span id="astar-status">SET START &amp; END TO BEGIN</span>
+  <span style="font-size:10px;color:var(--muted);">SPD</span>
+  <div class="slider-container" id="astar-speed-container" data-val="30">
+    <div class="slider-progress" id="astar-speed-progress"></div>
+    <div class="slider-thumb-glass" id="astar-speed-thumb">
+      <div class="slider-thumb-glass-filter"></div>
+      <div class="slider-thumb-glass-overlay"></div>
+      <div class="slider-thumb-glass-specular"></div>
+    </div>
+  </div>
+  <fieldset class="switcher theme-switcher" id="theme-switcher" data-active="1">
+    <button class="switcher__option" id="btn-theme-light" title="Light Mode">
+      <svg class="switcher__icon" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z" />
+      </svg>
+    </button>
+    <button class="switcher__option" id="btn-theme-dark" title="Dark Mode">
+      <svg class="switcher__icon" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" />
+      </svg>
+    </button>
+  </fieldset>
+</div>
+
+<svg style="display: none">
+  <filter id="glass-backdrop-filter" color-interpolation-filters="linearRGB" filterUnits="objectBoundingBox"
+    primitiveUnits="userSpaceOnUse">
+    <feDisplacementMap in="SourceGraphic" in2="SourceGraphic" scale="20" xChannelSelector="R" yChannelSelector="B"
+      x="0%" y="0%" width="100%" height="100%" result="displacementMap" />
+    <feGaussianBlur stdDeviation="3 3" x="0%" y="0%" width="100%" height="100%" in="displacementMap" edgeMode="none"
+      result="blur" />
+  </filter>
+</svg>
+
+<svg width="0" height="0" style="position: absolute;">
+  <filter id="mini-liquid-lens" x="-50%" y="-50%" width="200%" height="200%">
+    <feImage x="0" y="0" result="normalMap" xlink:href="data:image/svg+xml;utf8,
+    <svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'>
+      <radialGradient id='invmap' cx='50%' cy='50%' r='75%'>
+        <stop offset='0%' stop-color='rgb(128,128,255)'/>
+        <stop offset='90%' stop-color='rgb(255,255,255)'/>
+      </radialGradient>
+      <rect width='100%' height='100%' fill='url(#invmap)'/>
+    </svg>" />
+    <feDisplacementMap in="SourceGraphic" in2="normalMap" scale="-252" xChannelSelector="R" yChannelSelector="G"
+      result="displaced" />
+    <feMerge>
+      <feMergeNode in="displaced" />
+    </feMerge>
+  </filter>
+</svg>

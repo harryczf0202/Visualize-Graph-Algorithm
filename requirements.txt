@@ -1,0 +1,4 @@
+osmnx>=2.0.0
+folium
+numpy
+scipy
