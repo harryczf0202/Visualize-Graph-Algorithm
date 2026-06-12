@@ -2,7 +2,10 @@
 
 > Vibecoded with Gemini and Claude.
 
+![Visualizer Demo](assets/visualizer_demo.webp)
+
 An interactive web-based visualization tool for graph pathfinding algorithms (like A*) using real-world road networks from **Klang and Shah Alam, Malaysia** (queried from OpenStreetMap).
+
 
 The visualizer includes an **Algorithm Editor** that lets you write, compile, and execute pathfinding algorithms in **JavaScript**, **Python**, or **C++**, and see the search exploration and shortest path rendered dynamically on the map.
 
