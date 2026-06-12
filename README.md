@@ -2,7 +2,8 @@
 
 > Vibecoded with Gemini and Claude.
 
-![Visualizer Demo](assets/visualizer_demo.webp)
+![Visualizer Demo](assets/visualizer_demo.gif)
+*(A full high-resolution video demo is available in [assets/visualizer_demo.mp4](assets/visualizer_demo.mp4))*
 
 An interactive web-based visualization tool for graph pathfinding algorithms (like A*) using real-world road networks from **Klang and Shah Alam, Malaysia** (queried from OpenStreetMap).
 
